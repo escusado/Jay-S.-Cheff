@@ -1,35 +1,35 @@
 recepie = [
   {
     a:'download',
-    p:{url:'https://github.com/daneden/Toast/raw/master/reset.css', local:'css/reset.css'}
+    p:{url:'https://github.com/daneden/Toast/raw/master/reset.css', local:'css/lib/reset.css'}
   },
   {
     a:'download',
-    p:{url:'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js', local:'js/jquery.js'}
+    p:{url:'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js', local:'js/lib/jquery.js'}
   },
   {
     a:'download',
-    p:{url:'http://underscorejs.org/underscore.js', local:'js/underscore.js'}
+    p:{url:'http://underscorejs.org/underscore.js', local:'js/lib/underscore.js'}
   },
   {
     a:'download',
-    p:{url:'https://github.com/azendal/neon/raw/master/neon.js', local:'js/neon.js'}
+    p:{url:'https://github.com/azendal/neon/raw/master/neon.js', local:'js/lib/neon.js'}
   },  
   { 
     a:'write',
-    p:{filename: 'js/script.coffee', content: "\/\/Author: Toily\ninstance = new Project $('.project')"}
+    p:{filename: 'js/script.coffee', content: "#Author: Toily\ninstance = new Project $('.project')"}
   },
   { 
     a:'write', 
-    p:{filename: 'js/Project.coffee', content: "Class 'Project' (\n  prototype :\n    init : (element) ->\n      \n        )()\n"}
+    p:{filename: 'js/Project.coffee', content: "Class('Project')(\n  prototype :\n    init : (element) ->\n      console.log('Dinner is served.');\n        \n)\n"}
   },
   { 
     a:'write', 
-    p:{filename: '/css/style.styl', content: ".project\n  background-color: red;\n"}
+    p:{filename: 'css/style.styl', content: ".project\n  background-color: red;\n"}
   },
   { 
     a:'write', 
-    p:{filename: 'index.html', content: '<!DOCTYPE HTML>\n<html lang="en-US">\n<head>\n  <meta charset="UTF-8">\n  <title>My project</title>\n\n<link rel="stylesheet" type="text/css" href="style.css" media="all">\n\n  <!-- libs -->\n  <script type="text/javascript" src="js/jquery.js"></script>\n  <script type="text/javascript" src="js/underscore.js"></script>\n  <script type="text/javascript" src="js/neon.js"></script>\n\n  <!-- src -->\n  <script type="text/javascript" src="js/Project.js"></script>\n  <script type="text/javascript" src="js/script.js"></script>\n\n\n</head>\n<body>\n  \n</body>\n</html>\n\n\n\n<div class="container-fluid">'}
+    p:{filename: 'index.html', content: '<!DOCTYPE HTML>\n<html lang="en-US">\n<head>\n  <meta charset="UTF-8">\n  <title>My project</title>\n\n<link rel="stylesheet" type="text/css" href="css/lib/reset.css" media="all">\n<link rel="stylesheet" type="text/css" href="css/style.css" media="all">\n\n  <!-- libs -->\n  <script type="text/javascript" src="js/lib/jquery.js"></script>\n  <script type="text/javascript" src="js/lib/underscore.js"></script>\n  <script type="text/javascript" src="js/lib/neon.js"></script>\n\n  <!-- src -->\n  <script type="text/javascript" src="js/Project.js"></script>\n  <script type="text/javascript" src="js/script.js"></script>\n\n\n</head>\n<body>\n <div class="project">\n    My project\n  </div>\n</body>\n</html>\n'}
   } 
   // { 
   //   a:'mkdir',
@@ -105,14 +105,25 @@ var fileActions = {
     },
 
     mkdir: function(params, callback) {
-      fs.mkdir(params.foldername, function(err) {
+      var path = params.foldername.split('/')
+
+      for(var i = 0; i < path.length; i++){
+
+        var fullPath = '';
+
+        for(var j = 0; j < i; j++){
+          fullPath += path[j]+'/';
+        }
+
+        fs.mkdir(fullPath, function(err) {
           if(err) {
               console.log(newJaySCheffName+': '+err);
           } else {
               console.log(newJaySCheffName+': '+params.foldername+' folder was created!');
               if (callback && typeof(callback) === "function") {callback();}
           }
-      });
+        });        
+      }
     },
 
     download: function (params,callback) {
@@ -132,23 +143,6 @@ var fileActions = {
       request(fileUrl,function(e,r,b){
         if (callback && typeof(callback) === "function") {callback();}
       }).pipe(fs.createWriteStream(localFile));
-
-      // var file = fs.createWriteStream(localFile);
-      
-      // request.get(fileUrl, function(error, res, body) {
-      //     console.log(newJaySCheffName+': '+localFile + ' file downloaded!');
-      //     if (callback && typeof(callback) === "function") {callback();}
-      //     // res.on('data', function(data) {
-      //     //         file.write(data);
-      //     //         console.log(newJaySCheffName+':  downloading '+fileUrl+': '+file.bytesWritten);
-      //     //     }).on('end', function() {
-      //     //         file.end();
-      //     //         console.log(newJaySCheffName+': '+localFile + ' file downloaded!');
-      //     //         if (callback && typeof(callback) === "function") {callback();}
-      //     //     }).on('error',function(err){
-      //     //         console.log(err);
-      //     //     });
-      //     });
     }
 
 };
